@@ -50,7 +50,7 @@ groupadd docker
 usermod -aG docker $USER
 curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
-
+exit
 
 # SSH
 ssh-keygen -t rsa -b 4096 -C "dylan@neatmaps.com"
@@ -58,8 +58,10 @@ eval "$(ssh-agent -s)"
 ssh-add ~/.ssh/id_rsa
 
 # Track dotfiles
-git init --bare $HOME/.dotfiles
+git clone --bare git@github.com:dylrich/dotfiles.git $HOME/.dotfiles
 alias dot='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+rm ~/.bashrc
+dot checkout
 dot config --local status.showUntrackedFiles no
 
 reboot
