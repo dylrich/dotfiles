@@ -58,6 +58,7 @@ end
 
 function onSave(view)
     if GetOption("linter") then
+        problems:ClearHistory()
         runLinter()
     else
         CurView():ClearAllGutterMessages()
@@ -80,7 +81,7 @@ function onExit(output, linter, errorformat)
             local file, line, msg = string.match(line, regex)
             if basename(CurView().Buf.Path) == basename(file) then
                 CurView():GutterMessage(linter, tonumber(line), msg, 2)
-                messenger:Error(string.format("[%s] line %s: %s", linter, tonumber(line), msg))
+                problems:AddProblem(string.format("%s\t%s\t%s", linter, tonumber(line), msg))
             end
         end
     end
