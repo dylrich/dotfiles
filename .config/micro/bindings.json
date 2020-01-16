@@ -1,3 +1,4 @@
 {
-    "CtrlBackslash": "comment.comment"
+    "Alt-/": "lua:comment.comment",
+    "CtrlBackslash": "lua:comment.comment"
 }
