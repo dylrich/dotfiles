@@ -19,3 +19,5 @@ export PS1="\[\033[1;34m\]\u \[\033[1;36m\]\w \[\033[1;32m\]$\[\033[0;37m\] "
 export TERM=xterm-256color
 export MICRO_TRUECOLOR=1
 alias dot="/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME"
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
