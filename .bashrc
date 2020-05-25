@@ -21,3 +21,7 @@ export MICRO_TRUECOLOR=1
 alias dot="/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME"
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
+
+# disable control + s job control
+stty -ixon
+
