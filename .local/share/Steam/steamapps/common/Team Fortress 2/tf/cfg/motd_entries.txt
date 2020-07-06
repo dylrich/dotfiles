@@ -1,17 +1,15 @@
 "motd_entries"
 {
-	"last_request_time"		"2019-12-26 17:47:43"
+	"last_request_time"		"2020-05-24 16:52:39"
 	"last_request_language"		"english"
-	"94"
+	"95"
 	{
-		"post_time"		"2019-12-17 01:50:00"
-		"title_english"		"Merry Smissmas"
-		"text_english"		"Smissmas brings Stocking Stuffers for everyone, winter-themed community cosmetics, and new community War Paints!
-			Festivizers can be found as a random bonus when opening the Winter 2019 Cosmetic Case! Happy Holidays!"
-		"url"		"http://www.teamfortress.com"
-		"image"		"../backpack/crafting/winter2013_stocking_stuffer_large"
+		"post_time"		"2020-05-02 01:55:00"
+		"title_english"		"Rick May"
+		"text_english"		"We've added a tribute to Rick May, voice of the Soldier, during the month of May."
+		"url"		"http://www.teamfortress.com/"
+		"image"		"../vgui/main_menu/motd_soldier"
 		"header_type"		"0"
-		"header_english"		"News"
-		"header_icon"		"class_icons/filter_all_motd"
+		"header_english"		"#MMenu_News"
 	}
 }
