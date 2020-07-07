@@ -1,12 +1,12 @@
-[submodule "/home/dylrich/.local/share/nvim/site/pack/plugins/start/gruvbox"]
-	path = /home/dylrich/.local/share/nvim/site/pack/plugins/start/gruvbox
+[submodule "~/.local/share/nvim/site/pack/plugins/start/gruvbox"]
+	path = ~/.local/share/nvim/site/pack/plugins/start/gruvbox
 	url = git@github.com:morhetz/gruvbox.git
-[submodule "/home/dylrich/.local/share/nvim/site/pack/plugins/start/fzf"]
-	path = /home/dylrich/.local/share/nvim/site/pack/plugins/start/fzf
+[submodule "~/.local/share/nvim/site/pack/plugins/start/fzf"]
+	path = ~/.local/share/nvim/site/pack/plugins/start/fzf
 	url = git@github.com:junegunn/fzf.vim.git
-[submodule "/home/dylrich/.local/share/nvim/site/pack/plugins/start/coc"]
-	path = /home/dylrich/.local/share/nvim/site/pack/plugins/start/coc
+[submodule "~/.local/share/nvim/site/pack/plugins/start/coc"]
+	path = ~/.local/share/nvim/site/pack/plugins/start/coc
 	url = git@github.com:neoclide/coc.nvim.git
-[submodule "/home/dylrich/.local/share/nvim/site/pack/plugins/start/vim-commentary"]
-	path = /home/dylrich/.local/share/nvim/site/pack/plugins/start/vim-commentary
+[submodule "~/.local/share/nvim/site/pack/plugins/start/vim-commentary"]
+	path = ~/.local/share/nvim/site/pack/plugins/start/vim-commentary
 	url = git@github.com:tpope/vim-commentary.git
