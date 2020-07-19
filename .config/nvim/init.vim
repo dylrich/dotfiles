@@ -15,6 +15,8 @@ let g:mapleader = "\<Space>"
 nnoremap <leader>ev :vsplit $MYVIMRC<cr>
 nnoremap <leader>es :source $MYVIMRC<cr>
 
+nnoremap <leader>t :call ToggleNetrw()<cr>
+
 " escape will remove all highlighting
 nnoremap <esc> :noh<return><esc>
 
@@ -50,6 +52,7 @@ syntax on
 
 " great colorscheme
 colorscheme embark
+:TSEnableAll highlight
 
 " always allow mouse motions (for resizing splits)
 set mouse=a
@@ -85,6 +88,22 @@ let g:netrw_liststyle = 3
 let g:netrw_browse_split = 4
 let g:netrw_altv = 1
 let g:netrw_winsize = 25
+
+" toggle netrw!
+function! ToggleNetrw()
+        let i = bufnr("$")
+        let wasOpen = 0
+        while (i >= 1)
+            if (getbufvar(i, "&filetype") == "netrw")
+                silent exe "bwipeout " . i
+                let wasOpen = 1
+            endif
+            let i-=1
+        endwhile
+    if !wasOpen
+        silent Lexplore
+    endif
+endfunction
 
 " in case we ever want to use sessions
 let g:PathToSessions = "~/.config/nvim/sessions"
