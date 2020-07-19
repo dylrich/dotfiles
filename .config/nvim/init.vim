@@ -1,26 +1,55 @@
+" load everything in our plugins folder
+packloadall
+
+" remap colon to semicolon for easier command mode
 nnoremap ; :
 nnoremap : ;
 vnoremap ; :
 vnoremap : ;
 
-nnoremap x "_x
-nnoremap d "_d
-nnoremap D "_D
-vnoremap d "_d
-
-nnoremap <leader>d ""d
-nnoremap <leader>D ""D
-vnoremap <leader>d ""d
-
+" remap leader to space, we're spacemaces now!
 let mapleader = "\<Space>"
 let g:mapleader = "\<Space>"
 
-set mouse=a
+" bind ev to open this file; es will reload the configuration
+nnoremap <leader>ev :vsplit $MYVIMRC<cr>
+nnoremap <leader>es :source $MYVIMRC<cr>
 
+" bind functions that help find text. space f finds file names,
+" space g greps the current directory, space b searches buffer
+" names, space l searches open buffers' lines
+nnoremap <space>f :Files<CR>
+nnoremap <leader>b :Buffers<CR>
+nnoremap <leader>l :Lines<CR>
+nnoremap <leader>s :BLines<CR>
+nnoremap <leader>g :Rg<CR>
+
+" crude auto-closing keybinds for strings and brackets and whatnot.
+" only does anything in insert mode
+inoremap " ""<left>
+inoremap ' ''<left>
+inoremap ( ()<left>
+inoremap [ []<left>
+inoremap { {}<left>
+inoremap {<CR> {<CR>}<ESC>O
+inoremap {;<CR> {<CR>};<ESC>O
+
+" lsp keybindings for common code navigation tasks
+nnoremap <silent> gd    <cmd>lua vim.lsp.buf.definition()<CR>
+nnoremap <silent> K     <cmd>lua vim.lsp.buf.hover()<CR>
+nnoremap <silent> gr    <cmd>lua vim.lsp.buf.references()<CR>
+nnoremap <silent> cr    <cmd>lua vim.lsp.buf.clear_references()<CR>
+
+" turn on plugins, indent, and syntax highlighting
 filetype plugin on
 filetype indent on
 syntax on
 
+" great colorscheme
+colorscheme embark
+
+" always allow mouse motions (for resizing splits)
+set mouse=a
 set shiftwidth=2
 set softtabstop=2
 set tabstop=2
@@ -37,179 +66,79 @@ set smarttab
 set backspace=indent,eol,start
 set visualbell
 set showmatch
+set clipboard+=unnamedplus
+set statusline=
+set modelines=0
+set nomodeline
+set noshowmode
+set incsearch
+set background=dark
+set laststatus=2
+set termguicolors
 
+" set netrw settings for when we need a file tree
 let g:netrw_banner = 0
 let g:netrw_liststyle = 3
 let g:netrw_browse_split = 4
 let g:netrw_altv = 1
 let g:netrw_winsize = 25
-set termguicolors
-set background=dark
 
-set clipboard+=unnamedplus
+" in case we ever want to use sessions
+let g:PathToSessions = "~/.config/nvim/sessions"
 
-packloadall
+" make the status line change colors
+au InsertEnter * hi StatusLine term=reverse guifg=10 guibg=12 gui=bold,reverse
+au InsertLeave * hi StatusLine term=reverse guifg=0 guibg=2 gui=bold,reverse
 
-colorscheme gruvbox
+" ==================
+" fzf configuration
+" ==================
+set wildmode=list:longest,list:full
+set wildignore+=*.o,*.obj,.git,*.rbc,*.pyc,__pycache__
+let g:fzf_layout = { 'window': 'call FloatingFZF()' }
+let $FZF_DEFAULT_COMMAND =  "find * -path '*/\.*' -prune -o -path 'node_modules/**' -prune -o -path 'vendor/**' -prune -o -path 'target/**' -prune -o -path 'dist/**' -prune -o  -type f -print -o -type l -print 2> /dev/null"
+let $FZF_DEFAULT_OPTS=' --color=dark --color=fg:15,bg:-1,hl:1,fg+:#ffffff,bg+:-1,hl+:1 --color=info:-1,prompt:-1,pointer:12,marker:4,spinner:11,header:-1 --layout=reverse  --margin=0,4'
 
-nnoremap <leader>ev :vsplit $MYVIMRC<cr>
-nnoremap <leader>es :source $MYVIMRC<cr>
-
-inoremap " ""<left>
-inoremap ' ''<left>
-inoremap ( ()<left>
-inoremap [ []<left>
-inoremap { {}<left>
-inoremap {<CR> {<CR>}<ESC>O
-inoremap {;<CR> {<CR>};<ESC>O
-
-autocmd BufWritePre *.go :call CocAction('runCommand', 'editor.action.organizeImport')
-
-" TextEdit might fail if hidden is not set.
-set hidden
-
-" Some servers have issues with backup files, see #649.
-set nobackup
-set nowritebackup
-
-" Give more space for displaying messages.
-set cmdheight=2
-
-" Having longer updatetime (default is 4000 ms = 4 s) leads to noticeable
-" delays and poor user experience.
-set updatetime=300
-
-" Don't pass messages to |ins-completion-menu|.
-set shortmess+=c
-
-" Always show the signcolumn, otherwise it would shift the text each time
-set signcolumn=yes
-
-" Use tab for trigger completion with characters ahead and navigate.
-" NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
-" other plugin before putting this into your config.
-inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
-function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
+" uses the floating window api to float fzf in the center of the screen
+function! FloatingFZF()
+  let buf = nvim_create_buf(v:false, v:true)
+  call setbufvar(buf, '&signcolumn', 'no')
+ 
+  let height = float2nr(40)
+  let width = float2nr(160)
+  let horizontal = float2nr((&columns - width) / 2)
+  let vertical = 1
+ 
+  let opts = {
+        \ 'relative': 'editor',
+        \ 'row': vertical,
+        \ 'col': horizontal,
+        \ 'width': width,
+        \ 'height': height,
+        \ 'style': 'minimal'
+        \ }
+ 
+  call nvim_open_win(buf, v:true, opts)
 endfunction
 
-" Use <c-space> to trigger completion.
-inoremap <silent><expr> <c-space> coc#refresh()
+" ===================
+" lsp configuration
+" ===================
+lua << EOF
 
-" Use <cr> to confirm completion, `<C-g>u` means break undo chain at current
-" position. Coc only does snippet and additional edit on confirm.
-" <cr> could be remapped by other vim plugin, try `:verbose imap <CR>`.
-if exists('*complete_info')
-  inoremap <expr> <cr> complete_info()["selected"] != "-1" ? "\<C-y>" : "\<C-g>u\<CR>"
-else
-  inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-endif
+require'nvim_lsp'.gopls.setup{}
 
-" Use `[g` and `]g` to navigate diagnostics
-" Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
-nmap <silent> [g <Plug>(coc-diagnostic-prev)
-nmap <silent> ]g <Plug>(coc-diagnostic-next)
+EOF
 
-" GoTo code navigation.
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
+" what should appear in the gutter when there are mistakes?
+sign define LspDiagnosticsErrorSign text=>> texthl=TSError linehl= numhl=
+sign define LspDiagnosticsWarningSign text=W texthl=LspDiagnosticsWarning linehl= numhl=
+sign define LspDiagnosticsInformationSign text=I texthl=LspDiagnosticsInformation linehl= numhl=
+sign define LspDiagnosticsHintSign text=H texthl=LspDiagnosticsHint linehl= numhl=
 
-" Use K to show documentation in preview window.
-nnoremap <silent> K :call <SID>show_documentation()<CR>
+" auto format on save
+autocmd BufWritePre *.go,*.py lua vim.lsp.buf.formatting_sync(nil, 1000)
 
-function! s:show_documentation()
-  if (index(['vim','help'], &filetype) >= 0)
-    execute 'h '.expand('<cword>')
-  else
-    call CocAction('doHover')
-  endif
-endfunction
+" use the lsp omnifunc for autocomplete
+autocmd Filetype python,go setlocal omnifunc=v:lua.vim.lsp.omnifunc
 
-" Highlight the symbol and its references when holding the cursor.
-autocmd CursorHold *.go, *.py silent call CocActionAsync('highlight')
-autocmd CursorHold *.go, *.py call CocAction('doHover')
-" Symbol renaming.
-nmap <leader>rn <Plug>(coc-rename)
-
-" Formatting selected code.
-xmap <leader>f  <Plug>(coc-format-selected)
-nmap <leader>f  <Plug>(coc-format-selected)
-
-augroup mygroup
-  autocmd!
-  " Setup formatexpr specified filetype(s).
-  autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
-  " Update signature help on jump placeholder.
-  autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
-augroup end
-
-" Applying codeAction to the selected region.
-" Example: `<leader>aap` for current paragraph
-xmap <leader>a  <Plug>(coc-codeaction-selected)
-nmap <leader>a  <Plug>(coc-codeaction-selected)
-
-" Remap keys for applying codeAction to the current buffer.
-nmap <leader>ac  <Plug>(coc-codeaction)
-" Apply AutoFix to problem on the current line.
-nmap <leader>qf  <Plug>(coc-fix-current)
-
-" Map function and class text objects
-" NOTE: Requires 'textDocument.documentSymbol' support from the language server.
-xmap if <Plug>(coc-funcobj-i)
-omap if <Plug>(coc-funcobj-i)
-xmap af <Plug>(coc-funcobj-a)
-omap af <Plug>(coc-funcobj-a)
-xmap ic <Plug>(coc-classobj-i)
-omap ic <Plug>(coc-classobj-i)
-xmap ac <Plug>(coc-classobj-a)
-omap ac <Plug>(coc-classobj-a)
-
-" Use CTRL-S for selections ranges.
-" Requires 'textDocument/selectionRange' support of LS, ex: coc-tsserver
-nmap <silent> <C-s> <Plug>(coc-range-select)
-xmap <silent> <C-s> <Plug>(coc-range-select)
-
-" Add `:Format` command to format current buffer.
-command! -nargs=0 Format :call CocAction('format')
-
-" Add `:Fold` command to fold current buffer.
-command! -nargs=? Fold :call     CocAction('fold', <f-args>)
-
-" Add `:OR` command for organize imports of the current buffer.
-command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
-
-" Add (Neo)Vim's native statusline support.
-" NOTE: Please see `:h coc-status` for integrations with external plugins that
-" provide custom statusline: lightline.vim, vim-airline.
-" set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
-set statusline=
-" Mappings for CoCList
-" Show all diagnostics.
-nnoremap <silent><nowait> <space>a  :<C-u>CocList diagnostics<cr>
-" Manage extensions.
-" nnoremap <silent><nowait> <space>e  :<C-u>CocList extensions<cr>
-" Show commands.
-nnoremap <silent><nowait> <space>c  :<C-u>CocList commands<cr>
-" Find symbol of current document.
-nnoremap <silent><nowait> <space>o  :<C-u>CocList outline<cr>
-" Search workspace symbols.
-" nnoremap <silent><nowait> <space>s  :<C-u>CocList -I symbols<cr>
-" Do default action for next item.
-nnoremap <silent><nowait> <space>j  :<C-u>CocNext<CR>
-" Do default action for previous item.
-nnoremap <silent><nowait> <space>k  :<C-u>CocPrev<CR>
-" Resume latest coc list.
-nnoremap <silent><nowait> <space>p  :<C-u>CocListResume<CR>
-nnoremap <space>f :Files<CR>
-nnoremap <leader>b :Buffers<CR>
-nnoremap <leader>l :Lines<CR>
-nnoremap <leader>s :BLines<CR>
-nnoremap <leader>g :Rg<CR>
