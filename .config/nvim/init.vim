@@ -15,6 +15,9 @@ let g:mapleader = "\<Space>"
 nnoremap <leader>ev :vsplit $MYVIMRC<cr>
 nnoremap <leader>es :source $MYVIMRC<cr>
 
+" escape will remove all highlighting
+nnoremap <esc> :noh<return><esc>
+
 " bind functions that help find text. space f finds file names,
 " space g greps the current directory, space b searches buffer
 " names, space l searches open buffers' lines
@@ -86,9 +89,77 @@ let g:netrw_winsize = 25
 " in case we ever want to use sessions
 let g:PathToSessions = "~/.config/nvim/sessions"
 
-" make the status line change colors
-au InsertEnter * hi StatusLine term=reverse guifg=10 guibg=12 gui=bold,reverse
-au InsertLeave * hi StatusLine term=reverse guifg=0 guibg=2 gui=bold,reverse
+" open help in vertical split
+au FileType help wincmd L
+
+" search isn't set by the theme correctly
+hi Search guibg=#ffe6b3 guifg=#1e1c31
+
+" turn on blinking and make the cursor green!
+highlight Cursor guifg=white guibg=#A1EFD3
+set guicursor=n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50
+    \,a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor
+    \,sm:block-blinkwait175-blinkoff150-blinkon175
+
+" =========================
+" status line configuration
+" =========================
+
+" each mode will change the status line color
+hi StatusNormal term=reverse guifg=#d4bfff guibg=0 gui=bold,reverse
+hi StatusInsert term=reverse guifg=#F48FB1 guibg=0 gui=bold,reverse
+hi StatusVisual term=reverse guifg=#91ddff guibg=0 gui=bold,reverse
+
+" map mode code to a name
+let g:currentmode={
+    \ 'n'  : 'Normal',
+    \ 'no' : 'Normal·Operator Pending',
+    \ 'v'  : 'Visual',
+    \ 'V'  : 'V·Line',
+    \ '^V' : 'V·Block',
+    \ 's'  : 'Select',
+    \ 'S'  : 'S·Line',
+    \ '^S' : 'S·Block',
+    \ 'i'  : 'Insert',
+    \ 'R'  : 'Replace',
+    \ 'Rv' : 'V·Replace',
+    \ 'c'  : 'Command',
+    \ 'cv' : 'Vim Ex',
+    \ 'ce' : 'Ex',
+    \ 'r'  : 'Prompt',
+    \ 'rm' : 'More',
+    \ 'r?' : 'Confirm',
+    \ '!'  : 'Shell',
+    \ 't'  : 'Terminal'
+    \}
+
+" return git branch name
+function! BuildStatuslineGit()
+  let l:branchname = system("git rev-parse --abbrev-ref HEAD 2>/dev/null | tr -d '\n'")
+  return strlen(l:branchname) > 0?'  '.l:branchname.' ':''
+endfunction
+
+" build the status line!
+function! BuildStatusline()
+  let line = '' 
+  let mode = mode()
+
+  if mode == 'n'
+    let line .= '%#StatusNormal#'
+  elseif mode == 'i'
+    let line .= '%#StatusInsert#'
+  elseif mode == 'v'
+    let line .= '%#StatusVisual#'
+  endif
+
+  let line .='%t %m %r %h %w'
+  let line .= '%='
+  let line .= 'L%L (%2p%%) %{toupper(g:currentmode[mode()])} %Y% %{toupper(BuildStatuslineGit())}'
+
+    return line
+endfunc
+
+set statusline+=%!BuildStatusline()
 
 " ==================
 " fzf configuration
