@@ -2,6 +2,4 @@
 	name = dylrich
 	email = dylan@neatmaps.com
 [core]
-  editor = micro
-[mergetool]
-	keepBackup = false
+  	editor = kak
